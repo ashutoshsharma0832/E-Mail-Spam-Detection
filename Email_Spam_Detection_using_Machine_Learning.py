@@ -68,7 +68,7 @@ print(X_train)
 print(X_train_features)
 
 #Training the Model
-Logistic Regression
+# Logistic Regression
 
 model = LogisticRegression()
 
