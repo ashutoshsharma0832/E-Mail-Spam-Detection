@@ -6,7 +6,19 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score
 
 # loading the data from csv file to a pandas Dataframe
-raw_mail_data = pd.read_csv('/content/mail_data.csv')
+data = {
+    "Category": ["ham", "spam", "ham", "spam", "ham"],
+    "Message": [
+        "Hi, how are you doing today?",
+        "Win a free iPhone now!!!",
+        "Let's meet for lunch tomorrow",
+        "Congratulations, you have won a lottery",
+        "Are we still on for the meeting?"
+    ]
+}
+
+raw_mail_data = pd.DataFrame(data)
+
 
 #Data Collection & Pre-Processing
 
