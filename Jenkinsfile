@@ -8,18 +8,18 @@ pipeline {
             }
         }
 
-        stage('Check Python') {
+        stage('Check Python & Libraries') {
             steps {
-                sh '''
+                bat '''
                 python --version
                 python -c "import numpy, pandas, sklearn; print('Libraries OK')"
                 '''
             }
         }
 
-        stage('Run Script') {
+        stage('Run Spam Detection Script') {
             steps {
-                sh '''
+                bat '''
                 python Email_Spam_Detection_using_Machine_Learning.py
                 '''
             }
