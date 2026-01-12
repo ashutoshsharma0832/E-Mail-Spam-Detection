@@ -1,37 +1,13 @@
-// pipeline {
-//     agent any
-
-//     stages {
-//         stage('Checkout Code') {
-//             steps {
-//                 checkout scm
-//             }
-//         }
-
-//         stage('Check Python & Libraries') {
-//             steps {
-//                 bat '''
-//                 python --version
-//                 python -c "import numpy, pandas, sklearn; print('Libraries OK')"
-//                 '''
-//             }
-//         }
-
-//         stage('Run Spam Detection Script') {
-//             steps {
-//                 bat '''
-//                 python Email_Spam_Detection_using_Machine_Learning.py
-//                 '''
-//             }
-//         }
-//     }
-// }
-
 pipeline {
     agent any
 
+    environment {
+        IMAGE_NAME = "ashutosh157/email-spam-detection"
+        TAG = "latest"
+    }
+
     stages {
-        stage('Checkout Code') {
+        stage('Checkout') {
             steps {
                 checkout scm
             }
@@ -39,18 +15,31 @@ pipeline {
 
         stage('Docker Build') {
             steps {
-                bat '''
-                docker --version
-                docker build -t email-spam-detection .
-                '''
+                bat 'docker build -t %IMAGE_NAME%:%TAG% .'
             }
         }
 
-        stage('Docker Run') {
+        stage('Docker Login') {
             steps {
-                bat '''
-                docker run --rm email-spam-detection
-                '''
+                withCredentials([usernamePassword(
+                    credentialsId: 'dockerhub-creds',
+                    usernameVariable: 'DOCKER_USER',
+                    passwordVariable: 'DOCKER_PASS'
+                )]) {
+                    bat 'docker login -u %DOCKER_USER% -p %DOCKER_PASS%'
+                }
+            }
+        }
+
+        stage('Docker Push') {
+            steps {
+                bat 'docker push %IMAGE_NAME%:%TAG%'
+            }
+        }
+
+        stage('Docker Run (Test)') {
+            steps {
+                bat 'docker run --rm %IMAGE_NAME%:%TAG%'
             }
         }
     }
